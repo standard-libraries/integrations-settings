@@ -1,0 +1,41 @@
+.form-table{
+    margin-top: 0px;
+}
+.action-hook-container{
+    background-color: #ebebeb;
+    position: relative;
+    min-height: 28px;
+}
+.copy-clipboard,.php-code-revealer{
+    text-decoration: none;
+    position: relative;
+    display: inline-block;
+    width: 30px;
+    height: 20px;
+}
+.action-hook-revealer{
+    text-decoration: none;
+    position: absolute;
+    display: inline-block;
+    width: 30px;
+    height: 20px;
+    right: 0px;
+}
+.copy-clipboard>.dashicons{
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    font-size: 22px;
+}
+.php-code-revealer>.dashicons{
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    font-size: 22px;
+}
+.action-hook-revealer>.dashicons{
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    font-size: 22px;
+}

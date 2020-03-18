@@ -1,0 +1,42 @@
+<?php
+/**
+ * Valid integration values
+ *
+ * 'required'
+ * Integration options are forcilly shown
+ *
+ * 'optional'
+ * Integration options are shown according to the discretion of the user
+ * whether to show the options or not.
+ *
+ * 'ignore'
+ * No integration options are shown
+ */
+
+/**
+ * Facebook
+ * Specifically the `Graph API`
+ * https://developers.facebook.com/docs/graph-api
+ */
+$config['facebook_integration']		= 'ignore';
+
+/**
+ * Google
+ * Specifically the `Google Identity Platform`
+ * https://developers.google.com/identity
+ */
+$config['google_integration']		= 'ignore';
+
+/**
+ * Twitter
+ * Specifically the `Standard API`
+ * https://developer.twitter.com/en/docs/basics/getting-started
+ */
+$config['twitter_integration']		= 'ignore';
+
+/**
+ * Instagram
+ * Specifically the `Graph API`
+ * https://developers.facebook.com/docs/instagram-api/
+ */
+$config['instagram_integration']	= 'ignore';
