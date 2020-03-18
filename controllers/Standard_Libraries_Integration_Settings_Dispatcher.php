@@ -185,11 +185,15 @@ class Standard_Libraries_Integration_Settings_Dispatcher {
              * included in a theme  and the theme  has been activated; or when
              * included in a plugin and the plugin has been activated
              */
+            $themes_search_index = strpos(__FILE__,'wp-content/themes');
+            $plugins_search_index = strpos(__FILE__,'wp-content/plugins');
+
             if( $themes_search_index !== false ){
                 //add_action( 'after_switch_theme', array( $stdlib_integration_settings, 'initialize_theme' ) );
             } elseif( $plugins_search_index !== false ) {
                 $plugin_name = $stdlib_integration_settings->string_helper->get_plugin_file();
-                add_action('activate_'.$plugin_name, array( $stdlib_integration_settings, 'initialize_plugin' ) );
+                add_action('activate_'.$plugin_name, array( $stdlib_integration_settings, 'activate_plugin' ) );
+                add_action('deactivate_'.$plugin_name, array( $stdlib_integration_settings, 'deactivate_plugin' ) );
             }
 
             add_action( 'admin_menu', array( $stdlib_integration_settings, 'embed_submenu_page' ) );

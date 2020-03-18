@@ -171,36 +171,85 @@ class Standard_Libraries_Integration_Settings {
         }
     }
 
-    public function initialize_plugin() {
+    public function activate_plugin() {
         if( file_exists( $this->lib_path . "config.php" ) ) {
-            require_once  $this->lib_path . "config.php";
+            include  $this->lib_path . "config.php";
+
+            foreach( $config as $key => $value ) {
+                $boolean_value = 'no';
+                if( $value == 'required' ) {
+                    $boolean_value = 'yes';
+                }
+
+                if( get_option( $key, false ) === false ) {
+                    add_option($key,$boolean_value,'no');
+                }
+
+                if( $boolean_value=='yes' ) {
+                    update_option($key,$boolean_value,'no');
+                }
+            }
+
         } else {
             //wp_die( 'File: ' . $this->lib_path . "/config.php does not exist!" );
         }
 
-        $switches = array(
-            'facebook_integration'  => 'yes',
-            'google_integration'    => 'no',
-            'twitter_integration'   => 'no'
-        );
+    }
 
-        if( defined('FACEBOOK_INTEGRATION') && in_array(FACEBOOK_INTEGRATION,array('yes','no') ) ) {
-            $switches['facebook_integration'] = FACEBOOK_INTEGRATION;
-        }
+    public function deactivate_plugin() {
+        /**
+         * Conduct update to the list of dispatchers
+         */
+        $dispatchers_json_array = get_option('integration_settings_dispatchers','[]');
+        $dispatchers_php_array = json_decode($dispatchers_json_array);
+        if( count($dispatchers_php_array)>0 ) {
+            for( $i=0; $i<count($dispatchers_php_array); $i++ ) {
+                $dispatcher = $dispatchers_php_array[$i];
 
-        if( defined('GOOGLE_INTEGRATION') && in_array(GOOGLE_INTEGRATION,array('yes','no') ) ) {
-            $switches['google_integration'] = GOOGLE_INTEGRATION;
-        }
-
-        if( defined('TWITTER_INTEGRATION') && in_array(TWITTER_INTEGRATION,array('yes','no') ) ) {
-            $switches['twitter_integration'] = TWITTER_INTEGRATION;
-        }
-
-        foreach( $switches as $key => $value ) {
-            if( get_option( $key, false ) === false ) {
-                add_option($key,$value,'no');
+                if( $dispatcher->lib_path == $this->lib_path ) {
+                    unset($dispatchers_php_array[$i]);
+                }
             }
+
+            update_option('integration_settings_dispatchers', json_encode($dispatchers_php_array) );
         }
+
+        /**
+         * Conduct update to the list of integrations
+         */
+        $integrations_list_json_object = get_option('integration_settings_list','{}');
+
+        $integrations_list_php_object = new stdClass();
+        if( $integrations_list_json_object === '{}' ) {
+            $integrations_list_php_object = new stdClass();
+        } else {
+            $integrations_list_php_object = json_decode($integrations_list_json_object);
+        }
+
+        /**
+         * Has config.php
+         * `$key` refers to each item in the config file
+         */
+        if( file_exists( $this->lib_path . "config.php" ) ) {
+            include  $this->lib_path . "config.php";
+
+            foreach ($config as $key => $value) {
+                $is_item_listed = isset($integrations_list_php_object) && property_exists($integrations_list_php_object,$key);
+                $is_item_has_elements = count($integrations_list_php_object->{$key}) > 0;
+
+                if( $is_item_listed && $is_item_has_elements ) {
+
+                    foreach ($integrations_list_php_object->{$key} as $i => $prospect) {
+                        if( $prospect->lib_path == $this->lib_path ) {
+                            unset($integrations_list_php_object->{$key}[$i]);
+                        }
+                    }
+                }
+            }
+
+            update_option('integration_settings_list', json_encode($integrations_list_php_object) );
+        }
+
     }
 
     public function load_integration_options() {
@@ -228,7 +277,6 @@ class Standard_Libraries_Integration_Settings {
         if( isset($_POST['show_developer_helpers']) ) {
             update_user_meta( get_current_user_id(), 'show_developer_helpers', $_POST['show_developer_helpers'] );
         }
-
 
         die('');
     }
